@@ -1,13 +1,11 @@
 import { EventEmitter } from 'events';
 import { EVENT_NAMES } from '../constants/event-names.js';
-import { findUserName } from '../username/find-username.js';
-import { showGreeting } from '../username/show-greeting.js';
+import { userModule } from '../modules/user.js';
 
 const startEvent = new EventEmitter();
 
 startEvent.on(EVENT_NAMES.APP_START, () => {
-  findUserName();
-  showGreeting();
+  userModule.showGreeting();
 });
 
 const startApp = () => {
