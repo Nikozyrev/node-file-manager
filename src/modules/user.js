@@ -1,4 +1,4 @@
-class UserModule {
+export class UserModule {
   #usernameKey = '--username=';
 
   #username = '';
@@ -8,12 +8,12 @@ class UserModule {
   }
 
   showGreeting() {
-    console.log(`Welcome to the File Manager, ${this.#username}!`);
+    console.log(`\nWelcome to the File Manager, ${this.#username}!\n`);
   }
 
   showGoodbye() {
     console.log(
-      `Thank you for using File Manager, ${this.#username}, goodbye!`
+      `\nThank you for using File Manager, ${this.#username}, goodbye!`
     );
   }
 
@@ -26,5 +26,3 @@ class UserModule {
     return username;
   }
 }
-
-export const userModule = new UserModule();

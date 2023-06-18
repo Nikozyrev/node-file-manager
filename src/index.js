@@ -1,3 +1,5 @@
-import { startApp } from './events/app-start.js';
+import { App } from './modules/app.js';
 
-startApp();
+const app = new App();
+
+app.start();
