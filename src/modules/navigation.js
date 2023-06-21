@@ -1,5 +1,5 @@
 import { dirname, resolve } from 'path';
-import { access } from 'fs/promises';
+import { access, readdir } from 'fs/promises';
 import { userCommands } from '../controller/commands.js';
 import { appEvents } from '../app/app-events.js';
 
@@ -27,6 +27,31 @@ export class NavigationModule {
     }
   }
 
+  async #list() {
+    const list = await readdir(this.#currentDir, { withFileTypes: true });
+    const listWithTypes = list.reduce((acc, dirent) => {
+      const isFile = dirent.isFile();
+      const isDir = dirent.isDirectory();
+      if (isDir || isFile) {
+        return [
+          ...acc,
+          {
+            Name: dirent.name,
+            Type: isDir ? 'directory' : 'file',
+          },
+        ];
+      }
+      return acc;
+    }, []);
+    const result = listWithTypes.sort((a, b) => {
+      if (a.Type === b.Type) {
+        return a.Name.localeCompare(b.Name);
+      }
+      return a.Type === 'file' ? 1 : -1;
+    });
+    console.table(result);
+  }
+
   #printCurrentDir() {
     console.log(`You are currently in ${this.#currentDir}`);
   }
@@ -46,5 +71,6 @@ export class NavigationModule {
     this.#controller.subscribe(userCommands.cd, (...args) =>
       this.#goToPath(...args)
     );
+    this.#controller.subscribe(userCommands.ls, () => this.#list());
   }
 }
