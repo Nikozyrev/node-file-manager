@@ -35,7 +35,10 @@ export class Controller {
   }
 
   #executeCommand(command, args) {
-    this.#commandsEmitter.emit(command, ...args) ||
+    const listenersExist = this.#commandsEmitter.emit(command, ...args);
+    if (!listenersExist) {
       console.log('Invalid input');
+      this.askForCommand();
+    }
   }
 }
