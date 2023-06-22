@@ -3,6 +3,7 @@ import { Controller } from '../controller/controller.js';
 import { OsModule } from '../modules/os.js';
 import { NavigationModule } from '../modules/navigation.js';
 import { ExitModule } from '../modules/exit.js';
+import { appEvents } from './app-events.js';
 
 export class App {
   #controller;
@@ -14,16 +15,12 @@ export class App {
   constructor() {
     this.#controller = new Controller();
     this.#userModule = new UserModule();
-    this.#osModule = new OsModule();
-    this.#navModule = new NavigationModule(
-      this.#controller,
-      this.#osModule.getHomeDir()
-    );
+    this.#osModule = new OsModule(this.#controller);
+    this.#navModule = new NavigationModule(this.#controller);
     this.#exitModule = new ExitModule(this.#controller);
   }
 
   start() {
-    this.#userModule.showGreeting();
-    this.#controller.askForCommand();
+    process.emit(appEvents.start);
   }
 }

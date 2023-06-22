@@ -1,3 +1,5 @@
+import { appEvents } from '../app/app-events.js';
+
 export class UserModule {
   #usernameKey = '--username=';
 
@@ -5,17 +7,14 @@ export class UserModule {
 
   constructor() {
     this.#username = this.#findUserName();
-
-    process.on('exit', () => {
-      this.showGoodbye();
-    });
+    this.#subscribe();
   }
 
-  showGreeting() {
+  #showGreeting() {
     console.log(`\nWelcome to the File Manager, ${this.#username}!\n`);
   }
 
-  showGoodbye() {
+  #showGoodbye() {
     console.log(
       `\nThank you for using File Manager, ${this.#username}, goodbye!`
     );
@@ -28,5 +27,14 @@ export class UserModule {
     if (!usernameArg) throw new Error('User name is not provided.');
     const username = usernameArg.replace(this.#usernameKey, '');
     return username;
+  }
+
+  #subscribe() {
+    process.on(appEvents.start, () => {
+      this.#showGreeting();
+    });
+    process.on('exit', () => {
+      this.#showGoodbye();
+    });
   }
 }

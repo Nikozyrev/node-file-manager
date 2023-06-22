@@ -6,31 +6,31 @@ import { InvalidInputError, FailedOperationError } from '../utils/errors.js';
 
 export class NavigationModule {
   #controller;
-  #currentDir = '';
 
-  constructor(controller, defaultDir) {
+  constructor(controller) {
     this.#controller = controller;
-    this.#currentDir = defaultDir ?? '';
     this.#subscribe();
   }
 
   #goUp() {
-    const newPath = dirname(this.#currentDir);
-    this.#currentDir = newPath;
+    const newPath = dirname(this.#controller.currentDir);
+    this.#controller.currentDir = newPath;
   }
 
   async #goToPath(path) {
     if (!path) throw new InvalidInputError();
-    const newPath = resolve(this.#currentDir, path);
+    const newPath = resolve(this.#controller.currentDir, path);
 
     const hasAccess = await this.#hasPathAccess(newPath);
     if (!hasAccess) throw new FailedOperationError();
 
-    this.#currentDir = newPath;
+    this.#controller.currentDir = newPath;
   }
 
   async #list() {
-    const list = await readdir(this.#currentDir, { withFileTypes: true });
+    const list = await readdir(this.#controller.currentDir, {
+      withFileTypes: true,
+    });
     const listWithTypes = list.reduce((acc, dirent) => {
       const isFile = dirent.isFile();
       const isDir = dirent.isDirectory();
@@ -55,7 +55,7 @@ export class NavigationModule {
   }
 
   #printCurrentDir() {
-    console.log(`You are currently in ${this.#currentDir}`);
+    console.log(`You are currently in ${this.#controller.currentDir}`);
   }
 
   async #hasPathAccess(path) {

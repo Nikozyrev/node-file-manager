@@ -5,6 +5,7 @@ import { userCommands } from './commands.js';
 import { InvalidInputError } from '../utils/errors.js';
 
 export class Controller {
+  #currentDir = '';
   #commandsEmitter;
   #rl;
 
@@ -16,25 +17,17 @@ export class Controller {
       output: process.stdout,
     });
 
-    this.#rl.on('SIGINT', () => {
-      this.#rl.close();
-      process.exit();
-    });
-
-    this.#commandsEmitter.on('error', (e) => {
-      console.log(e.message);
-      this.askForCommand();
-    });
+    this.#subscribe();
   }
 
   subscribe(command, listener) {
     this.#commandsEmitter.addListener(command, async (...args) => {
       await listener(...args);
-      this.askForCommand();
+      this.#askForCommand();
     });
   }
 
-  async askForCommand() {
+  async #askForCommand() {
     process.emit(appEvents.askForCommand);
     const userInput = await this.#rl.question('Enter command: ');
     const [command, ...args] = userInput.split(' ');
@@ -49,5 +42,29 @@ export class Controller {
     if (!listenersExist) {
       this.#commandsEmitter.emit('error', new InvalidInputError());
     }
+  }
+
+  #subscribe() {
+    process.on(appEvents.start, () => {
+      setImmediate(() => this.#askForCommand());
+    });
+
+    this.#rl.on('SIGINT', () => {
+      this.#rl.close();
+      process.exit();
+    });
+
+    this.#commandsEmitter.on('error', (e) => {
+      console.log(e.message);
+      this.#askForCommand();
+    });
+  }
+
+  get currentDir() {
+    return this.#currentDir;
+  }
+
+  set currentDir(newCurrentDir) {
+    this.#currentDir = newCurrentDir;
   }
 }
