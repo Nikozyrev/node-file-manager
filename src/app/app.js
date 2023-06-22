@@ -19,7 +19,7 @@ export class App {
       this.#controller,
       this.#osModule.getHomeDir()
     );
-    this.#osModule = new ExitModule(this.#controller);
+    this.#exitModule = new ExitModule(this.#controller);
   }
 
   start() {
