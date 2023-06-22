@@ -2,6 +2,7 @@ import { dirname, resolve } from 'path';
 import { access, readdir } from 'fs/promises';
 import { userCommands } from '../controller/commands.js';
 import { appEvents } from '../app/app-events.js';
+import { InvalidInputError, NoDirectoryError } from '../utils/errors.js';
 
 export class NavigationModule {
   #controller;
@@ -19,12 +20,13 @@ export class NavigationModule {
   }
 
   async #goToPath(path) {
+    if (!path) throw new InvalidInputError();
     const newPath = resolve(this.#currentDir, path);
-    if (await this.#hasPathAccess(newPath)) {
-      this.#currentDir = newPath;
-    } else {
-      console.error('No such directory.');
-    }
+
+    const hasAccess = await this.#hasPathAccess(newPath);
+    if (!hasAccess) throw new NoDirectoryError();
+
+    this.#currentDir = newPath;
   }
 
   async #list() {

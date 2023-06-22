@@ -1,13 +1,14 @@
 import { EventEmitter } from 'events';
 import { createInterface } from 'readline/promises';
 import { appEvents } from '../app/app-events.js';
+import { InvalidInputError } from '../utils/errors.js';
 
 export class Controller {
   #commandsEmitter;
   #rl;
 
   constructor() {
-    this.#commandsEmitter = new EventEmitter();
+    this.#commandsEmitter = new EventEmitter({ captureRejections: true });
 
     this.#rl = createInterface({
       input: process.stdin,
@@ -17,6 +18,11 @@ export class Controller {
     this.#rl.on('SIGINT', () => {
       this.#rl.close();
       process.exit();
+    });
+
+    this.#commandsEmitter.on('error', (e) => {
+      console.log(e.message);
+      this.askForCommand();
     });
   }
 
@@ -37,8 +43,7 @@ export class Controller {
   #executeCommand(command, args) {
     const listenersExist = this.#commandsEmitter.emit(command, ...args);
     if (!listenersExist) {
-      console.log('Invalid input');
-      this.askForCommand();
+      this.#commandsEmitter.emit('error', new InvalidInputError());
     }
   }
 }
