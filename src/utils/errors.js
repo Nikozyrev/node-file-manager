@@ -5,9 +5,9 @@ export class InvalidInputError extends Error {
   }
 }
 
-export class NoDirectoryError extends Error {
+export class FailedOperationError extends Error {
   constructor() {
     super();
-    this.message = 'No such directory';
+    this.message = 'Operation failed';
   }
 }
