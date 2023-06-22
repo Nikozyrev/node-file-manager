@@ -2,12 +2,14 @@ import { UserModule } from '../modules/user.js';
 import { Controller } from '../controller/controller.js';
 import { OsModule } from '../modules/os.js';
 import { NavigationModule } from '../modules/navigation.js';
+import { ExitModule } from '../modules/exit.js';
 
 export class App {
   #controller;
   #userModule;
   #osModule;
   #navModule;
+  #exitModule;
 
   constructor() {
     this.#controller = new Controller();
@@ -17,13 +19,11 @@ export class App {
       this.#controller,
       this.#osModule.getHomeDir()
     );
+    this.#osModule = new ExitModule(this.#controller);
   }
 
   start() {
     this.#userModule.showGreeting();
     this.#controller.askForCommand();
-    process.on('exit', () => {
-      this.#userModule.showGoodbye();
-    });
   }
 }

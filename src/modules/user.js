@@ -5,6 +5,10 @@ export class UserModule {
 
   constructor() {
     this.#username = this.#findUserName();
+
+    process.on('exit', () => {
+      this.showGoodbye();
+    });
   }
 
   showGreeting() {

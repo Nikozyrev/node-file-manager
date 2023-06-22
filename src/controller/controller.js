@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import { createInterface } from 'readline/promises';
 import { appEvents } from '../app/app-events.js';
+import { userCommands } from './commands.js';
 import { InvalidInputError } from '../utils/errors.js';
 
 export class Controller {
@@ -41,7 +42,10 @@ export class Controller {
   }
 
   #executeCommand(command, args) {
-    const listenersExist = this.#commandsEmitter.emit(command, ...args);
+    const listenersExist = this.#commandsEmitter.emit(
+      userCommands[command],
+      ...args
+    );
     if (!listenersExist) {
       this.#commandsEmitter.emit('error', new InvalidInputError());
     }
