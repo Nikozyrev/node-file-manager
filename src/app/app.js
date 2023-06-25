@@ -5,6 +5,7 @@ import { NavigationModule } from '../modules/navigation.js';
 import { ExitModule } from '../modules/exit.js';
 import { FilesModule } from '../modules/files.js';
 import { appEvents } from './app-events.js';
+import { HashModule } from '../modules/hash.js';
 
 export class App {
   #controller;
@@ -13,6 +14,7 @@ export class App {
   #navModule;
   #exitModule;
   #filesModule;
+  #hashModule;
 
   constructor() {
     this.#controller = new Controller();
@@ -21,6 +23,7 @@ export class App {
     this.#navModule = new NavigationModule(this.#controller);
     this.#exitModule = new ExitModule(this.#controller);
     this.#filesModule = new FilesModule(this.#controller);
+    this.#hashModule = new HashModule(this.#controller);
   }
 
   start() {
